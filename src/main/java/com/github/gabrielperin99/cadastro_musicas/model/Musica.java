@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 
@@ -11,6 +13,16 @@ import jakarta.persistence.Table;
 @Table (name = "musicas")
 public class Musica {
     public Musica(){}
+
+    public Musica(String nome, String genero, String duracao, Artista artista) {
+        this.nome = nome;
+        this.genero = genero;
+        this.duracao = duracao;
+        this.artista = artista;
+    }
+    @ManyToOne 
+    @JoinColumn (name = "artista_id")
+    private Artista artista;
 
     @Id 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
