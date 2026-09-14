@@ -58,4 +58,8 @@ public class Musica {
         this.duracao = duracao;
     }
 
+    public Artista getArtista() {
+       return artista;
+    }
+
 }

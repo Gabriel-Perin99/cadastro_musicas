@@ -1,6 +1,5 @@
 package com.github.gabrielperin99.cadastro_musicas.main;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
@@ -31,7 +30,6 @@ public class Main {
                         2 - Cadastrar música
                         3 - Listar músicas
                         4 - Buscar musicas por artista
-                        5 - Pesqueisar dados sobre um artista
     
                         9 - sair
                     """;; 
@@ -49,6 +47,7 @@ public class Main {
                    break;
                 case 3:
                     listarMusicas();
+                    break;
                 case 4:
                     buscarMusicaPorArtista();
                     break;
@@ -92,30 +91,39 @@ public class Main {
         System.out.print("Digite o ID do artista:");
         Long idArtista = scanner.nextLong();
         scanner.nextLine();
-        System.out.print("Nome da musica:");
-        String nomeMusica = scanner.nextLine();
-        System.out.print("Genero da musica:");
-        String generoMusica = scanner.nextLine();
-        System.out.print("Duracao da musica:");
-        String duracaoMusica = scanner.nextLine();
-
+        
         Optional<Artista> artistaOptional = repository.findById(idArtista);
-        if (artistaOptional.isPresent()) {
-            Artista artista = artistaOptional.get();
-
-            Musica musica = new Musica(nomeMusica, generoMusica, duracaoMusica,artista);
-            
-            artista.getMusicas().add(musica);
-
-            repository.save(artista);
-
-            System.out.println("Musica adicionada com sucesso!");
-
-        } else {
+        if (!artistaOptional.isPresent()) {
             System.out.println("Artista não encontrado");
+        } else {
+            System.out.println("Você selecionou o artista: " + artistaOptional.get().getNome());
+            System.out.print("Nome da musica:");
+            String nomeMusica = scanner.nextLine();
+            System.out.print("Genero da musica:");
+            String generoMusica = scanner.nextLine();
+            System.out.print("Duracao da musica:");
+            String duracaoMusica = scanner.nextLine();
+            Artista artista = artistaOptional.get();
+            Musica musica = new Musica(nomeMusica, generoMusica, duracaoMusica, artista);
+            artista.getMusicas().add(musica);
+            repository.save(artista);
+            System.out.println("Musica adicionada com sucesso!");
         }
     }
     
-    public void listarMusicas() {}
-    public void buscarMusicaPorArtista() {}
+    public void listarMusicas() {
+        System.out.println("Listando musicas .....");
+        List<Musica> listaDeMusicas = repository.BuscarListaDeMusicas();
+        listaDeMusicas.forEach(m -> System.out.printf("\nArtista: %s, Genero: %s,  Nome da musica: %s\n", m.getArtista().getNome(), m.getGenero() , m.getNome()));
+    }
+    public void buscarMusicaPorArtista() {
+        System.out.println("Digite o nome de um artista: ");
+        var artista = scanner.nextLine();
+        List<Musica> listaDeMusicas = repository.BuscarListaDeMusicasPorArtista(artista.toLowerCase());
+        if (listaDeMusicas.isEmpty()) {
+            System.out.println("\nNão foi encontrado musicas cadastradas para o artista " + artista);
+        } else {
+            listaDeMusicas.forEach(m -> System.out.printf("\nArtista: %s Musica: %s Genero: %s, Duracao: %s\n",m.getArtista().getNome(), m.getNome(), m.getGenero(), m.getDuracao()));
+        }
+    }
 }
